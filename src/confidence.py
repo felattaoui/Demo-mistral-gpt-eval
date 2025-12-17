@@ -288,6 +288,13 @@ class ConfidenceCalculator:
         }
 
 
-def create_confidence_calculator(fuzzy_threshold: float = 0.8) -> ConfidenceCalculator:
-    """Factory function to create a confidence calculator."""
+def create_confidence_calculator(fuzzy_threshold: float = 0.7) -> ConfidenceCalculator:
+    """Factory function to create a confidence calculator.
+    
+    Args:
+        fuzzy_threshold: Minimum similarity ratio (0-1) to consider a match.
+                        Default 0.7 = 70% similar text is considered a match.
+                        Lower = more permissive (tolerates OCR errors)
+                        Higher = stricter (fewer false positives)
+    """
     return ConfidenceCalculator(fuzzy_threshold=fuzzy_threshold)
