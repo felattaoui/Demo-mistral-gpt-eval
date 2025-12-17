@@ -39,7 +39,7 @@ class DocumentExtraction(BaseModel):
     total_amount: Optional[Money] = Field(default=None, description="Total amount")
     line_items: List[LineItem] = Field(default_factory=list, description="Extracted line items")
 
-    confidence_score: float = Field(description="Confidence score in [0,1] for the extraction")
+    # NOTE: confidence_score removed - calculated by OCR vs Extraction comparison (see confidence.py)
 
 
 def make_schema_strict(schema: dict) -> dict:

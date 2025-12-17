@@ -14,6 +14,7 @@ from utils import get_file_info, encode_file_to_base64, is_pdf
 from ocr import MistralOCR, create_ocr_client
 from extractor import StructuredExtractor, create_extractor
 from evaluator import QualityEvaluator, create_evaluator
+from confidence import ConfidenceCalculator, create_confidence_calculator
 from schemas import DocumentExtraction, get_strict_schema, EXTRACTION_SCHEMA
 
 
@@ -52,6 +53,10 @@ class DocumentPipeline:
             self.evaluator = None
             print("   ⚠️  Evaluator not configured (optional)")
         
+        # Confidence calculator (OCR vs Extraction comparison)
+        self.confidence_calculator = create_confidence_calculator(fuzzy_threshold=0.8)
+        print("   ✅ Confidence calculator ready (OCR vs Extraction comparison)")
+        
         print("✅ Pipeline ready\n")
     
     def process(
@@ -86,6 +91,7 @@ class DocumentPipeline:
             "file_info": get_file_info(file_path),
             "ocr_result": None,
             "extraction": None,
+            "confidence": None,  # Calculated by OCR vs Extraction comparison
             "evaluation": None,
         }
         
@@ -126,6 +132,7 @@ class DocumentPipeline:
                 "pages_processed": self.ocr.get_page_count(ocr_result),
                 "text_length": len(source_text),
                 "text_preview": source_text[:500] + "..." if len(source_text) > 500 else source_text,
+                "full_text": source_text,  # Stocker pour le calcul de confiance
             }
             
             if verbose:
@@ -163,10 +170,15 @@ class DocumentPipeline:
             
             results["extraction"] = extraction
             
+            # Calculer la confiance par comparaison OCR vs Extraction
+            confidence_result = self.confidence_calculator.calculate(extraction, source_text)
+            results["confidence"] = confidence_result
+            
             if verbose:
-                confidence = extraction.get("confidence_score", "N/A")
+                conf_score = confidence_result["overall_confidence"]
                 mode_label = "hybrid" if extraction_mode == "hybrid" else "text"
-                print(f"   ✅ Extraction complete (mode: {mode_label}, confidence: {confidence})")
+                print(f"   ✅ Extraction complete (mode: {mode_label})")
+                print(f"   📊 Confidence (OCR vs Extraction): {conf_score:.1%}")
         
         # Evaluation (optional)
         if run_evaluation and self.evaluator:
@@ -227,8 +239,19 @@ class DocumentPipeline:
             amt = extraction["total_amount"]
             print(f"Total Amount: {amt.get('amount', 'N/A')} {amt.get('currency', '')}")
         
-        # Confidence
-        print(f"Confidence: {extraction.get('confidence_score', 'N/A')}")
+        # Confidence (calculated by OCR vs Extraction comparison)
+        confidence = results.get("confidence", {})
+        if confidence:
+            overall = confidence.get("overall_confidence", "N/A")
+            method = confidence.get("method", "unknown")
+            print(f"\n📊 Confidence Score: {overall:.1%} (method: {method})")
+            
+            # Show field breakdown
+            summary = confidence.get("summary", {})
+            if summary:
+                print(f"   ✅ High confidence fields: {summary.get('high_confidence', 0)}")
+                print(f"   ⚠️  Medium confidence: {summary.get('medium_confidence', 0)}")
+                print(f"   ❌ Low confidence: {summary.get('low_confidence', 0)}")
         
         # Line items
         items = extraction.get("line_items", [])

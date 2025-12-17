@@ -17,6 +17,8 @@ from azure.ai.evaluation import (
     CoherenceEvaluator,
 )
 
+from confidence import ConfidenceCalculator, create_confidence_calculator
+
 class ExtractionValidator:
     """Custom validators for extraction quality."""
     
@@ -36,14 +38,6 @@ class ExtractionValidator:
             return True, f"Valid amount: {amount}"
         return False, f"Negative amount: {amount}"
     
-    @staticmethod
-    def validate_confidence(score: Optional[float]) -> Tuple[bool, str]:
-        if score is None:
-            return False, "Missing confidence score"
-        if 0 <= score <= 1:
-            return True, f"Valid score: {score}"
-        return False, f"Score out of range: {score}"
-    
     def validate(self, extraction: Dict[str, Any]) -> Dict[str, Any]:
         """Run all validations."""
         results = {
@@ -54,8 +48,8 @@ class ExtractionValidator:
             "validation_score": 0.0
         }
         
+        # confidence_score removed - calculated by OCR/Extraction comparison
         validations = [
-            ("confidence_score", self.validate_confidence, extraction.get("confidence_score")),
             ("document_date", self.validate_date, extraction.get("document_date")),
         ]
         
@@ -176,10 +170,8 @@ class QualityEvaluator:
         scores.append(results["validation_metrics"]["validation_score"])
         weights.append(0.15)
         
-        # Add model's confidence score
-        if extraction.get("confidence_score"):
-            scores.append(extraction["confidence_score"])
-            weights.append(0.1)
+        # confidence_score calculated separately via ConfidenceCalculator (OCR vs Extraction comparison)
+        # and added in the pipeline if ocr_text is available
         
         if scores:
             results["overall_score"] = sum(s * w for s, w in zip(scores, weights)) / sum(weights)
