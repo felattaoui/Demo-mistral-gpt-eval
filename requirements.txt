@@ -1,0 +1,30 @@
+# ==============================================
+# Azure Document Extraction Pipeline
+# Requirements
+# ==============================================
+
+# OpenAI SDK (for Responses API and Chat Completions)
+# Version >= 1.42.0 required for Structured Outputs
+openai>=1.52.0
+
+# Azure AI SDKs
+azure-ai-evaluation>=1.0.0
+azure-ai-inference>=1.0.0b9
+azure-identity>=1.15.0
+
+# Pydantic for data models and JSON Schema generation
+pydantic>=2.8.0
+
+# Utilities
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+# Image processing (optional, for preview)
+Pillow>=10.0.0
+
+# Jupyter Notebook
+jupyter>=1.0.0
+ipykernel>=6.25.0
+
+# Pandas for evaluation results analysis
+pandas>=2.0.0

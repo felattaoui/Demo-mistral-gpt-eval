@@ -1,0 +1,71 @@
+{
+  "file_info": {
+    "path": "../invoice.png",
+    "name": "invoice.png",
+    "extension": "png",
+    "size_bytes": 370569,
+    "size_mb": 0.353
+  },
+  "ocr_result": {
+    "pages_processed": 1,
+    "text_length": 784,
+    "text_preview": "# INVOICE \n\n## N O .\n\nPaul J Gordon\n2758 Paul Wayne Haggerty Road Kenner, LA 70062\n\n0324\n\n| DESCRIPTION | HOURS | RATE | AMOUNT |\n| :--: | :--: | :--: | :--: |\n| Sed ut perspiciatis unde omnis iste lorem | 5 | $\\$ 50$ | $\\$ 100.00$ |\n| Adipisc ing elit, sed do eius mod tempor | 2 | $\\$ 50$ | $\\$ 100.00$ |\n| Nemo enim ipsam volupt atem quia voluptas | 5 | $\\$ 50$ | $\\$ 100.00$ |\n| Sed ut perspiciatis unde omnis iste lorem | 7 | $\\$ 50$ | $\\$ 100.00$ |\n| Adipisc ing elit, sed do eius mod tempor | ..."
+  },
+  "extraction": {
+    "document_type": "invoice",
+    "document_number": "0324",
+    "document_date": null,
+    "supplier": {
+      "name": "Paul J Gordon",
+      "address": "2758 Paul Wayne Haggerty Road Kenner, LA 70062",
+      "tax_id": null
+    },
+    "customer": null,
+    "total_amount": {
+      "amount": 500,
+      "currency": "USD"
+    },
+    "line_items": [
+      {
+        "description": "Sed ut perspiciatis unde omnis iste lorem",
+        "quantity": 5,
+        "unit_price": 50,
+        "total": 100
+      },
+      {
+        "description": "Adipisc ing elit, sed do eius mod tempor",
+        "quantity": 2,
+        "unit_price": 50,
+        "total": 100
+      },
+      {
+        "description": "Nemo enim ipsam volupt atem quia voluptas",
+        "quantity": 5,
+        "unit_price": 50,
+        "total": 100
+      },
+      {
+        "description": "Sed ut perspiciatis unde omnis iste lorem",
+        "quantity": 7,
+        "unit_price": 50,
+        "total": 100
+      },
+      {
+        "description": "Adipisc ing elit, sed do eius mod tempor",
+        "quantity": 2,
+        "unit_price": 50,
+        "total": 100
+      }
+    ],
+    "confidence_score": 0.96,
+    "_metadata": {
+      "model": "gpt-5.1",
+      "response_id": "resp_0491430943c3c0e100694087f297688196867aa5562512ccc9",
+      "usage": {
+        "input_tokens": 846,
+        "output_tokens": 221
+      }
+    }
+  },
+  "evaluation": null
+}
