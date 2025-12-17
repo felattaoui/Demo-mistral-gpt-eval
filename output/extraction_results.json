@@ -1,6 +1,6 @@
 {
   "file_info": {
-    "path": "../invoice.png",
+    "path": "invoice.png",
     "name": "invoice.png",
     "extension": "png",
     "size_bytes": 370569,
@@ -8,64 +8,138 @@
   },
   "ocr_result": {
     "pages_processed": 1,
-    "text_length": 784,
-    "text_preview": "# INVOICE \n\n## N O .\n\nPaul J Gordon\n2758 Paul Wayne Haggerty Road Kenner, LA 70062\n\n0324\n\n| DESCRIPTION | HOURS | RATE | AMOUNT |\n| :--: | :--: | :--: | :--: |\n| Sed ut perspiciatis unde omnis iste lorem | 5 | $\\$ 50$ | $\\$ 100.00$ |\n| Adipisc ing elit, sed do eius mod tempor | 2 | $\\$ 50$ | $\\$ 100.00$ |\n| Nemo enim ipsam volupt atem quia voluptas | 5 | $\\$ 50$ | $\\$ 100.00$ |\n| Sed ut perspiciatis unde omnis iste lorem | 7 | $\\$ 50$ | $\\$ 100.00$ |\n| Adipisc ing elit, sed do eius mod tempor | ..."
+    "text_length": 1053,
+    "text_preview": "^{}[] INVOICE\n\n^{}[] NO.\n\n^{}[] 0324\n\n^{}[] Chan Accounting\n\n^{}[] 1991 Broadway Street\n\n^{}[] Kenner, LA 70062\n\n^{}[] BILL TO\n\n^{}[] Paul J Gordon\n\n^{}[] 2758 Paul Wayne Haggerty Road\n\n^{}[] Kenner, LA 70062\n\n<table><tr><th>DESCRIPTION</th><th>HOURS</th><th>RATE</th><th>AMOUNT</th></tr><tr><td>Sed ut perspiciatis unde omnis iste lorem</td><td>5</td><td>$50</td><td>$100.00</td></tr><tr><td>Adipisc ing elit, sed do eius mod tempor</td><td>2</td><td>$50</td><td>$100.00</td></tr><tr><td>Nemo enim i..."
   },
   "extraction": {
     "document_type": "invoice",
     "document_number": "0324",
     "document_date": null,
     "supplier": {
-      "name": "Paul J Gordon",
-      "address": "2758 Paul Wayne Haggerty Road Kenner, LA 70062",
+      "name": "Chan Accounting",
+      "address": "1991 Broadway Street\nKenner, LA 70062",
       "tax_id": null
     },
-    "customer": null,
+    "customer": {
+      "name": "Paul J Gordon",
+      "address": "2758 Paul Wayne Haggerty Road\nKenner, LA 70062",
+      "tax_id": null
+    },
     "total_amount": {
-      "amount": 500,
+      "amount": 500.0,
       "currency": "USD"
     },
     "line_items": [
       {
         "description": "Sed ut perspiciatis unde omnis iste lorem",
         "quantity": 5,
-        "unit_price": 50,
-        "total": 100
+        "unit_price": 50.0,
+        "total": 100.0
       },
       {
         "description": "Adipisc ing elit, sed do eius mod tempor",
         "quantity": 2,
-        "unit_price": 50,
-        "total": 100
+        "unit_price": 50.0,
+        "total": 100.0
       },
       {
         "description": "Nemo enim ipsam volupt atem quia voluptas",
         "quantity": 5,
-        "unit_price": 50,
-        "total": 100
+        "unit_price": 50.0,
+        "total": 100.0
       },
       {
         "description": "Sed ut perspiciatis unde omnis iste lorem",
         "quantity": 7,
-        "unit_price": 50,
-        "total": 100
+        "unit_price": 50.0,
+        "total": 100.0
       },
       {
         "description": "Adipisc ing elit, sed do eius mod tempor",
         "quantity": 2,
-        "unit_price": 50,
-        "total": 100
+        "unit_price": 50.0,
+        "total": 100.0
       }
     ],
-    "confidence_score": 0.96,
+    "confidence_score": 0.97,
     "_metadata": {
       "model": "gpt-5.1",
-      "response_id": "resp_0491430943c3c0e100694087f297688196867aa5562512ccc9",
+      "response_id": "resp_02597657e8b20e0c006942e6cbe2848195b31ae68a8a4003bf",
+      "mode": "hybrid_ocr_vision",
       "usage": {
-        "input_tokens": 846,
-        "output_tokens": 221
+        "input_tokens": 1748,
+        "output_tokens": 267
       }
     }
   },
-  "evaluation": null
+  "evaluation": {
+    "ai_metrics": {
+      "groundedness": {
+        "groundedness": 5.0,
+        "gpt_groundedness": 5.0,
+        "groundedness_reason": "The RESPONSE is grounded in the CONTEXT, providing accurate and relevant structured data extraction. It is complete except for the document date, which is not present in the CONTEXT. This omission does not detract significantly from the overall accuracy and relevance of the RESPONSE.",
+        "groundedness_result": "pass",
+        "groundedness_threshold": 3,
+        "groundedness_prompt_tokens": 2184,
+        "groundedness_completion_tokens": 215,
+        "groundedness_total_tokens": 2399,
+        "groundedness_finish_reason": "stop",
+        "groundedness_model": "gpt-4o-2024-11-20",
+        "groundedness_sample_input": "[{\"role\": \"user\", \"content\": \"{\\\"query\\\": \\\"Extract structured data from the document.\\\", \\\"response\\\": \\\"{\\\\n  \\\\\\\"document_type\\\\\\\": \\\\\\\"invoice\\\\\\\",\\\\n  \\\\\\\"document_number\\\\\\\": \\\\\\\"0324\\\\\\\",\\\\n  \\\\\\\"document_date\\\\\\\": null,\\\\n  \\\\\\\"supplier\\\\\\\": {\\\\n    \\\\\\\"name\\\\\\\": \\\\\\\"Chan Accounting\\\\\\\",\\\\n    \\\\\\\"address\\\\\\\": \\\\\\\"1991 Broadway Street\\\\\\\\nKenner, LA 70062\\\\\\\",\\\\n    \\\\\\\"tax_id\\\\\\\": null\\\\n  },\\\\n  \\\\\\\"customer\\\\\\\": {\\\\n    \\\\\\\"name\\\\\\\": \\\\\\\"Paul J Gordon\\\\\\\",\\\\n    \\\\\\\"address\\\\\\\": \\\\\\\"2758 Paul Wayne Haggerty Road\\\\\\\\nKenner, LA 70062\\\\\\\",\\\\n    \\\\\\\"tax_id\\\\\\\": null\\\\n  },\\\\n  \\\\\\\"total_amount\\\\\\\": {\\\\n    \\\\\\\"amount\\\\\\\": 500.0,\\\\n    \\\\\\\"currency\\\\\\\": \\\\\\\"USD\\\\\\\"\\\\n  },\\\\n  \\\\\\\"line_items\\\\\\\": [\\\\n    {\\\\n      \\\\\\\"description\\\\\\\": \\\\\\\"Sed ut perspiciatis unde omnis iste lorem\\\\\\\",\\\\n      \\\\\\\"quantity\\\\\\\": 5,\\\\n      \\\\\\\"unit_price\\\\\\\": 50.0,\\\\n      \\\\\\\"total\\\\\\\": 100.0\\\\n    },\\\\n    {\\\\n      \\\\\\\"description\\\\\\\": \\\\\\\"Adipisc ing elit, sed do eius mod tempor\\\\\\\",\\\\n      \\\\\\\"quantity\\\\\\\": 2,\\\\n      \\\\\\\"unit_price\\\\\\\": 50.0,\\\\n      \\\\\\\"total\\\\\\\": 100.0\\\\n    },\\\\n    {\\\\n      \\\\\\\"description\\\\\\\": \\\\\\\"Nemo enim ipsam volupt atem quia voluptas\\\\\\\",\\\\n      \\\\\\\"quantity\\\\\\\": 5,\\\\n      \\\\\\\"unit_price\\\\\\\": 50.0,\\\\n      \\\\\\\"total\\\\\\\": 100.0\\\\n    },\\\\n    {\\\\n      \\\\\\\"description\\\\\\\": \\\\\\\"Sed ut perspiciatis unde omnis iste lorem\\\\\\\",\\\\n      \\\\\\\"quantity\\\\\\\": 7,\\\\n      \\\\\\\"unit_price\\\\\\\": 50.0,\\\\n      \\\\\\\"total\\\\\\\": 100.0\\\\n    },\\\\n    {\\\\n      \\\\\\\"description\\\\\\\": \\\\\\\"Adipisc ing elit, sed do eius mod tempor\\\\\\\",\\\\n      \\\\\\\"quantity\\\\\\\": 2,\\\\n      \\\\\\\"unit_price\\\\\\\": 50.0,\\\\n      \\\\\\\"total\\\\\\\": 100.0\\\\n    }\\\\n  ],\\\\n  \\\\\\\"confidence_score\\\\\\\": 0.97,\\\\n  \\\\\\\"_metadata\\\\\\\": {\\\\n    \\\\\\\"model\\\\\\\": \\\\\\\"gpt-5.1\\\\\\\",\\\\n    \\\\\\\"response_id\\\\\\\": \\\\\\\"resp_02597657e8b20e0c006942e6cbe2848195b31ae68a8a4003bf\\\\\\\",\\\\n    \\\\\\\"mode\\\\\\\": \\\\\\\"hybrid_ocr_vision\\\\\\\",\\\\n    \\\\\\\"usage\\\\\\\": {\\\\n      \\\\\\\"input_tokens\\\\\\\": 1748,\\\\n      \\\\\\\"output_tokens\\\\\\\": 267\\\\n    }\\\\n  }\\\\n}\\\", \\\"context\\\": \\\"^{}[] INVOICE\\\\n\\\\n^{}[] NO.\\\\n\\\\n^{}[] 0324\\\\n\\\\n^{}[] Chan Accounting\\\\n\\\\n^{}[] 1991 Broadway Street\\\\n\\\\n^{}[] Kenner, LA 70062\\\\n\\\\n^{}[] BILL TO\\\\n\\\\n^{}[] Paul J Gordon\\\\n\\\\n^{}[] 2758 Paul Wayne Haggerty Road\\\\n\\\\n^{}[] Kenner, LA 70062\\\\n\\\\n<table><tr><th>DESCRIPTION</th><th>HOURS</th><th>RATE</th><th>AMOUNT</th></tr><tr><td>Sed ut perspiciatis unde omnis iste lorem</td><td>5</td><td>$50</td><td>$100.00</td></tr><tr><td>Adipisc ing elit, sed do eius mod tempor</td><td>2</td><td>$50</td><td>$100.00</td></tr><tr><td>Nemo enim ipsam volupt atem quia voluptas</td><td>5</td><td>$50</td><td>$100.00</td></tr><tr><td>Sed ut perspiciatis unde omnis iste lorem</td><td>7</td><td>$50</td><td>$100.00</td></tr><tr><td>Adipisc ing elit, sed do eius mod tempor</td><td>2</td><td>$50</td><td>$100.00</td></tr><tr><td colspan=\\\\\\\"3\\\\\\\">TOTAL</td><td>$500.00</td></tr></table>\\\\n\\\\nThank you for your business.\\\\n\\\\nIf you have any questions about this invoice, please contact owner. Total due in 15 days. Overdue accounts subject to service charge of 10% per month. Make all checks payable to Company Name.\\\"}\"}]",
+        "groundedness_sample_output": "[{\"role\": \"assistant\", \"content\": \"<S0>Let's think step by step: The QUERY asks for structured data extraction from the provided CONTEXT, which is an invoice. The RESPONSE provides structured data, including document type, document number, supplier and customer details, total amount, and line items. The RESPONSE aligns well with the CONTEXT, accurately extracting details such as the invoice number, supplier and customer names and addresses, and line items with descriptions, quantities, unit prices, and totals. However, the RESPONSE omits the document date, which is marked as null, even though the CONTEXT does not provide this information. The RESPONSE does not introduce any unrelated or incorrect information, and the extracted data is relevant and accurate based on the CONTEXT.</S0>  \\n<S1>The RESPONSE is grounded in the CONTEXT, providing accurate and relevant structured data extraction. It is complete except for the document date, which is not present in the CONTEXT. This omission does not detract significantly from the overall accuracy and relevance of the RESPONSE.</S1>  \\n<S2>5</S2>  \"}]"
+      },
+      "relevance": {
+        "relevance": 5.0,
+        "gpt_relevance": 5.0,
+        "relevance_result": "pass",
+        "relevance_threshold": 3,
+        "relevance_reason": "The response fully extracts structured data from the document, including all key details such as document type, supplier, customer, total amount, and line items. It directly addresses the query comprehensively.",
+        "relevance_prompt_tokens": 2055,
+        "relevance_completion_tokens": 54,
+        "relevance_total_tokens": 2109,
+        "relevance_finish_reason": "stop",
+        "relevance_model": "gpt-4o-2024-11-20",
+        "relevance_sample_input": "[{\"role\": \"user\", \"content\": \"{\\\"query\\\": \\\"Extract structured data from the document.\\\", \\\"response\\\": \\\"{\\\\n  \\\\\\\"document_type\\\\\\\": \\\\\\\"invoice\\\\\\\",\\\\n  \\\\\\\"document_number\\\\\\\": \\\\\\\"0324\\\\\\\",\\\\n  \\\\\\\"document_date\\\\\\\": null,\\\\n  \\\\\\\"supplier\\\\\\\": {\\\\n    \\\\\\\"name\\\\\\\": \\\\\\\"Chan Accounting\\\\\\\",\\\\n    \\\\\\\"address\\\\\\\": \\\\\\\"1991 Broadway Street\\\\\\\\nKenner, LA 70062\\\\\\\",\\\\n    \\\\\\\"tax_id\\\\\\\": null\\\\n  },\\\\n  \\\\\\\"customer\\\\\\\": {\\\\n    \\\\\\\"name\\\\\\\": \\\\\\\"Paul J Gordon\\\\\\\",\\\\n    \\\\\\\"address\\\\\\\": \\\\\\\"2758 Paul Wayne Haggerty Road\\\\\\\\nKenner, LA 70062\\\\\\\",\\\\n    \\\\\\\"tax_id\\\\\\\": null\\\\n  },\\\\n  \\\\\\\"total_amount\\\\\\\": {\\\\n    \\\\\\\"amount\\\\\\\": 500.0,\\\\n    \\\\\\\"currency\\\\\\\": \\\\\\\"USD\\\\\\\"\\\\n  },\\\\n  \\\\\\\"line_items\\\\\\\": [\\\\n    {\\\\n      \\\\\\\"description\\\\\\\": \\\\\\\"Sed ut perspiciatis unde omnis iste lorem\\\\\\\",\\\\n      \\\\\\\"quantity\\\\\\\": 5,\\\\n      \\\\\\\"unit_price\\\\\\\": 50.0,\\\\n      \\\\\\\"total\\\\\\\": 100.0\\\\n    },\\\\n    {\\\\n      \\\\\\\"description\\\\\\\": \\\\\\\"Adipisc ing elit, sed do eius mod tempor\\\\\\\",\\\\n      \\\\\\\"quantity\\\\\\\": 2,\\\\n      \\\\\\\"unit_price\\\\\\\": 50.0,\\\\n      \\\\\\\"total\\\\\\\": 100.0\\\\n    },\\\\n    {\\\\n      \\\\\\\"description\\\\\\\": \\\\\\\"Nemo enim ipsam volupt atem quia voluptas\\\\\\\",\\\\n      \\\\\\\"quantity\\\\\\\": 5,\\\\n      \\\\\\\"unit_price\\\\\\\": 50.0,\\\\n      \\\\\\\"total\\\\\\\": 100.0\\\\n    },\\\\n    {\\\\n      \\\\\\\"description\\\\\\\": \\\\\\\"Sed ut perspiciatis unde omnis iste lorem\\\\\\\",\\\\n      \\\\\\\"quantity\\\\\\\": 7,\\\\n      \\\\\\\"unit_price\\\\\\\": 50.0,\\\\n      \\\\\\\"total\\\\\\\": 100.0\\\\n    },\\\\n    {\\\\n      \\\\\\\"description\\\\\\\": \\\\\\\"Adipisc ing elit, sed do eius mod tempor\\\\\\\",\\\\n      \\\\\\\"quantity\\\\\\\": 2,\\\\n      \\\\\\\"unit_price\\\\\\\": 50.0,\\\\n      \\\\\\\"total\\\\\\\": 100.0\\\\n    }\\\\n  ],\\\\n  \\\\\\\"confidence_score\\\\\\\": 0.97,\\\\n  \\\\\\\"_metadata\\\\\\\": {\\\\n    \\\\\\\"model\\\\\\\": \\\\\\\"gpt-5.1\\\\\\\",\\\\n    \\\\\\\"response_id\\\\\\\": \\\\\\\"resp_02597657e8b20e0c006942e6cbe2848195b31ae68a8a4003bf\\\\\\\",\\\\n    \\\\\\\"mode\\\\\\\": \\\\\\\"hybrid_ocr_vision\\\\\\\",\\\\n    \\\\\\\"usage\\\\\\\": {\\\\n      \\\\\\\"input_tokens\\\\\\\": 1748,\\\\n      \\\\\\\"output_tokens\\\\\\\": 267\\\\n    }\\\\n  }\\\\n}\\\"}\"}]",
+        "relevance_sample_output": "[{\"role\": \"assistant\", \"content\": \"{\\n  \\\"explanation\\\": \\\"The response fully extracts structured data from the document, including all key details such as document type, supplier, customer, total amount, and line items. It directly addresses the query comprehensively.\\\",\\n  \\\"score\\\": 5\\n}\"}]"
+      },
+      "coherence": {
+        "coherence": 4.0,
+        "gpt_coherence": 4.0,
+        "coherence_reason": "The RESPONSE is coherent, logically organized, and directly addresses the QUERY with a clear and structured presentation of the extracted data.",
+        "coherence_result": "pass",
+        "coherence_threshold": 3,
+        "coherence_prompt_tokens": 1733,
+        "coherence_completion_tokens": 147,
+        "coherence_total_tokens": 1880,
+        "coherence_finish_reason": "stop",
+        "coherence_model": "gpt-4o-2024-11-20",
+        "coherence_sample_input": "[{\"role\": \"user\", \"content\": \"{\\\"query\\\": \\\"Extract structured data from the document.\\\", \\\"response\\\": \\\"{\\\\n  \\\\\\\"document_type\\\\\\\": \\\\\\\"invoice\\\\\\\",\\\\n  \\\\\\\"document_number\\\\\\\": \\\\\\\"0324\\\\\\\",\\\\n  \\\\\\\"document_date\\\\\\\": null,\\\\n  \\\\\\\"supplier\\\\\\\": {\\\\n    \\\\\\\"name\\\\\\\": \\\\\\\"Chan Accounting\\\\\\\",\\\\n    \\\\\\\"address\\\\\\\": \\\\\\\"1991 Broadway Street\\\\\\\\nKenner, LA 70062\\\\\\\",\\\\n    \\\\\\\"tax_id\\\\\\\": null\\\\n  },\\\\n  \\\\\\\"customer\\\\\\\": {\\\\n    \\\\\\\"name\\\\\\\": \\\\\\\"Paul J Gordon\\\\\\\",\\\\n    \\\\\\\"address\\\\\\\": \\\\\\\"2758 Paul Wayne Haggerty Road\\\\\\\\nKenner, LA 70062\\\\\\\",\\\\n    \\\\\\\"tax_id\\\\\\\": null\\\\n  },\\\\n  \\\\\\\"total_amount\\\\\\\": {\\\\n    \\\\\\\"amount\\\\\\\": 500.0,\\\\n    \\\\\\\"currency\\\\\\\": \\\\\\\"USD\\\\\\\"\\\\n  },\\\\n  \\\\\\\"line_items\\\\\\\": [\\\\n    {\\\\n      \\\\\\\"description\\\\\\\": \\\\\\\"Sed ut perspiciatis unde omnis iste lorem\\\\\\\",\\\\n      \\\\\\\"quantity\\\\\\\": 5,\\\\n      \\\\\\\"unit_price\\\\\\\": 50.0,\\\\n      \\\\\\\"total\\\\\\\": 100.0\\\\n    },\\\\n    {\\\\n      \\\\\\\"description\\\\\\\": \\\\\\\"Adipisc ing elit, sed do eius mod tempor\\\\\\\",\\\\n      \\\\\\\"quantity\\\\\\\": 2,\\\\n      \\\\\\\"unit_price\\\\\\\": 50.0,\\\\n      \\\\\\\"total\\\\\\\": 100.0\\\\n    },\\\\n    {\\\\n      \\\\\\\"description\\\\\\\": \\\\\\\"Nemo enim ipsam volupt atem quia voluptas\\\\\\\",\\\\n      \\\\\\\"quantity\\\\\\\": 5,\\\\n      \\\\\\\"unit_price\\\\\\\": 50.0,\\\\n      \\\\\\\"total\\\\\\\": 100.0\\\\n    },\\\\n    {\\\\n      \\\\\\\"description\\\\\\\": \\\\\\\"Sed ut perspiciatis unde omnis iste lorem\\\\\\\",\\\\n      \\\\\\\"quantity\\\\\\\": 7,\\\\n      \\\\\\\"unit_price\\\\\\\": 50.0,\\\\n      \\\\\\\"total\\\\\\\": 100.0\\\\n    },\\\\n    {\\\\n      \\\\\\\"description\\\\\\\": \\\\\\\"Adipisc ing elit, sed do eius mod tempor\\\\\\\",\\\\n      \\\\\\\"quantity\\\\\\\": 2,\\\\n      \\\\\\\"unit_price\\\\\\\": 50.0,\\\\n      \\\\\\\"total\\\\\\\": 100.0\\\\n    }\\\\n  ],\\\\n  \\\\\\\"confidence_score\\\\\\\": 0.97,\\\\n  \\\\\\\"_metadata\\\\\\\": {\\\\n    \\\\\\\"model\\\\\\\": \\\\\\\"gpt-5.1\\\\\\\",\\\\n    \\\\\\\"response_id\\\\\\\": \\\\\\\"resp_02597657e8b20e0c006942e6cbe2848195b31ae68a8a4003bf\\\\\\\",\\\\n    \\\\\\\"mode\\\\\\\": \\\\\\\"hybrid_ocr_vision\\\\\\\",\\\\n    \\\\\\\"usage\\\\\\\": {\\\\n      \\\\\\\"input_tokens\\\\\\\": 1748,\\\\n      \\\\\\\"output_tokens\\\\\\\": 267\\\\n    }\\\\n  }\\\\n}\\\"}\"}]",
+        "coherence_sample_output": "[{\"role\": \"assistant\", \"content\": \"<S0>Let's think step by step: The QUERY asks for structured data extraction from a document. The RESPONSE provides a structured JSON object containing relevant fields such as document type, document number, supplier and customer details, total amount, line items, and metadata. The information is logically organized, with clear connections between the fields. The RESPONSE directly addresses the QUERY and presents the data in a coherent and easy-to-follow format. There are no abrupt transitions or unclear relationships between the elements, and the structure is consistent throughout.</S0>  \\n<S1>The RESPONSE is coherent, logically organized, and directly addresses the QUERY with a clear and structured presentation of the extracted data.</S1>  \\n<S2>4</S2>  \"}]"
+      }
+    },
+    "validation_metrics": {
+      "validations": {
+        "confidence_score": {
+          "valid": true,
+          "message": "Valid score: 0.97",
+          "value": 0.97
+        },
+        "document_date": {
+          "valid": true,
+          "message": "No date provided (optional)",
+          "value": null
+        },
+        "total_amount": {
+          "valid": true,
+          "message": "Valid amount: 500.0",
+          "value": 500.0
+        }
+      },
+      "total_checks": 3,
+      "passed_checks": 3,
+      "failed_checks": 0,
+      "validation_score": 1.0
+    },
+    "overall_score": 0.9470000000000001
+  }
 }

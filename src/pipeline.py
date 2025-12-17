@@ -130,19 +130,43 @@ class DocumentPipeline:
             
             if verbose:
                 print(f"   ✅ OCR complete ({results['ocr_result']['pages_processed']} pages)")
-                print("\n🔄 Step 2: Structured extraction with GPT-5.1")
             
-            extraction = self.extractor.extract(
-                text=source_text,
-                schema=schema,
-                schema_name=schema_name,
-                instructions=custom_instructions,
-            )
+            # Determine extraction mode
+            extraction_mode = self.config.extraction_mode
+            
+            if extraction_mode == "hybrid":
+                if verbose:
+                    print("\n🔄 Step 2: Hybrid extraction with GPT-5.1 (OCR + Image)")
+                
+                # Encode the original file for vision
+                file_base64, mime_type = encode_file_to_base64(file_path)
+                
+                extraction = self.extractor.extract_hybrid(
+                    ocr_text=source_text,
+                    image_base64=file_base64,
+                    schema=schema,
+                    schema_name=schema_name,
+                    image_mime_type=mime_type,
+                    instructions=custom_instructions,
+                )
+            else:
+                # text_only mode (original behavior)
+                if verbose:
+                    print("\n🔄 Step 2: Structured extraction with GPT-5.1 (text only)")
+                
+                extraction = self.extractor.extract(
+                    text=source_text,
+                    schema=schema,
+                    schema_name=schema_name,
+                    instructions=custom_instructions,
+                )
+            
             results["extraction"] = extraction
             
             if verbose:
                 confidence = extraction.get("confidence_score", "N/A")
-                print(f"   ✅ Extraction complete (confidence: {confidence})")
+                mode_label = "hybrid" if extraction_mode == "hybrid" else "text"
+                print(f"   ✅ Extraction complete (mode: {mode_label}, confidence: {confidence})")
         
         # Evaluation (optional)
         if run_evaluation and self.evaluator:

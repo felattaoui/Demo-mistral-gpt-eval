@@ -29,6 +29,9 @@ class Config:
     # Evaluation (optional)
     eval_deployment: Optional[str] = None
     
+    # Extraction mode: "text_only", "hybrid", or "vision_only"
+    extraction_mode: str = "hybrid"
+    
     @classmethod
     def from_env(cls, env_path: Optional[str] = None) -> "Config":
         """
@@ -48,6 +51,8 @@ class Config:
             azure_tenant_id=os.getenv("AZURE_TENANT_ID"),
             # Optional: if not set, the pipeline won't initialize evaluation.
             eval_deployment=os.getenv("EVAL_MODEL_DEPLOYMENT"),
+            # Extraction mode: text_only (OCR only), hybrid (OCR + image), vision_only (image only)
+            extraction_mode=os.getenv("EXTRACTION_MODE", "hybrid"),
         )
     
     @property
