@@ -1,5 +1,5 @@
 """
-Structured data extraction using Azure OpenAI Chat Completions API.
+Structured data extraction using Azure OpenAI Responses API.
 
 Uses Entra ID authentication with Structured Outputs for guaranteed JSON schema compliance.
 """
@@ -7,13 +7,13 @@ Uses Entra ID authentication with Structured Outputs for guaranteed JSON schema 
 import json
 from typing import Dict, Any, Optional, List
 
-from openai import AzureOpenAI
-from azure.identity import DefaultAzureCredential, get_bearer_token_provider
+from openai import OpenAI
+from azure.identity import DefaultAzureCredential
 
 
 class StructuredExtractor:
     """
-    Extract structured data using Azure OpenAI Chat Completions API.
+    Extract structured data using Azure OpenAI Responses API.
 
     Features:
     - Entra ID authentication with automatic token refresh
@@ -52,19 +52,20 @@ Output must strictly conform to the provided JSON schema."""
             endpoint: Azure OpenAI endpoint (e.g., https://xxx.cognitiveservices.azure.com)
             deployment: Model deployment name (e.g., gpt-5.1)
         """
-        # Get token provider for Entra ID auth
-        token_provider = get_bearer_token_provider(
-            DefaultAzureCredential(),
-            "https://cognitiveservices.azure.com/.default"
-        )
-
-        # Use AzureOpenAI client for Chat Completions
-        self.client = AzureOpenAI(
-            azure_endpoint=endpoint,
-            azure_ad_token_provider=token_provider,
-            api_version="2024-10-21",  # Supports structured outputs
-        )
+        self.endpoint = endpoint.rstrip("/")
         self.deployment = deployment
+        self.credential = DefaultAzureCredential()
+
+        # Get initial token and create client
+        self._refresh_client()
+
+    def _refresh_client(self):
+        """Refresh the OpenAI client with a new Entra ID token."""
+        token = self.credential.get_token("https://cognitiveservices.azure.com/.default").token
+        self.client = OpenAI(
+            base_url=f"{self.endpoint}/openai/v1/",
+            api_key=token,
+        )
 
     def extract(
         self,
@@ -97,27 +98,25 @@ Output must strictly conform to the provided JSON schema."""
 
         if image_base64:
             user_content.append({
-                "type": "image_url",
-                "image_url": {
-                    "url": f"data:{image_mime_type};base64,{image_base64}",
-                },
+                "type": "input_image",
+                "image_url": f"data:{image_mime_type};base64,{image_base64}",
             })
 
         user_content.append({
-            "type": "text",
+            "type": "input_text",
             "text": f"Document content:\n\n---\n{text}\n---\n\nExtract the information according to the defined schema.",
         })
 
-        # Call Chat Completions API with Structured Outputs
-        response = self.client.chat.completions.create(
+        # Refresh token and call Responses API
+        self._refresh_client()
+
+        response = self.client.responses.create(
             model=self.deployment,
-            messages=[
-                {"role": "system", "content": instructions},
-                {"role": "user", "content": user_content},
-            ],
-            response_format={
-                "type": "json_schema",
-                "json_schema": {
+            instructions=instructions,
+            input=[{"role": "user", "content": user_content}],
+            text={
+                "format": {
+                    "type": "json_schema",
                     "name": schema_name,
                     "schema": schema,
                     "strict": True,
@@ -127,15 +126,15 @@ Output must strictly conform to the provided JSON schema."""
         )
 
         # Parse response
-        result = json.loads(response.choices[0].message.content)
+        result = json.loads(response.output_text)
 
         result["_metadata"] = {
             "model": self.deployment,
             "response_id": response.id,
             "mode": "text_only",
             "usage": {
-                "input_tokens": response.usage.prompt_tokens if response.usage else None,
-                "output_tokens": response.usage.completion_tokens if response.usage else None,
+                "input_tokens": response.usage.input_tokens if response.usage else None,
+                "output_tokens": response.usage.output_tokens if response.usage else None,
             },
         }
 
@@ -176,14 +175,12 @@ Output must strictly conform to the provided JSON schema."""
         user_content: List[Dict[str, Any]] = [
             # 1. Original image for visual verification
             {
-                "type": "image_url",
-                "image_url": {
-                    "url": f"data:{image_mime_type};base64,{image_base64}",
-                },
+                "type": "input_image",
+                "image_url": f"data:{image_mime_type};base64,{image_base64}",
             },
             # 2. OCR text as reference
             {
-                "type": "text",
+                "type": "input_text",
                 "text": f"""## OCR Text (from Mistral Document AI)
 The following text was extracted by OCR. Use it as reference but verify against the image:
 
@@ -197,16 +194,16 @@ Use the image as the source of truth, and the OCR text as helpful context.""",
             },
         ]
 
-        # Call Chat Completions API with Structured Outputs
-        response = self.client.chat.completions.create(
+        # Refresh token and call Responses API
+        self._refresh_client()
+
+        response = self.client.responses.create(
             model=self.deployment,
-            messages=[
-                {"role": "system", "content": instructions},
-                {"role": "user", "content": user_content},
-            ],
-            response_format={
-                "type": "json_schema",
-                "json_schema": {
+            instructions=instructions,
+            input=[{"role": "user", "content": user_content}],
+            text={
+                "format": {
+                    "type": "json_schema",
                     "name": schema_name,
                     "schema": schema,
                     "strict": True,
@@ -216,15 +213,15 @@ Use the image as the source of truth, and the OCR text as helpful context.""",
         )
 
         # Parse response
-        result = json.loads(response.choices[0].message.content)
+        result = json.loads(response.output_text)
 
         result["_metadata"] = {
             "model": self.deployment,
             "response_id": response.id,
             "mode": "hybrid_ocr_vision",
             "usage": {
-                "input_tokens": response.usage.prompt_tokens if response.usage else None,
-                "output_tokens": response.usage.completion_tokens if response.usage else None,
+                "input_tokens": response.usage.input_tokens if response.usage else None,
+                "output_tokens": response.usage.output_tokens if response.usage else None,
             },
         }
 
@@ -241,9 +238,7 @@ Use the image as the source of truth, and the OCR text as helpful context.""",
         """
         Extract structured data directly from a PDF.
 
-        Note: Chat Completions API doesn't support native PDF input.
-        Use OCR + extract() or extract_hybrid() instead.
-        This method is kept for backwards compatibility but will raise an error.
+        Responses API supports native PDF input without requiring OCR preprocessing.
 
         Args:
             pdf_base64: Base64-encoded PDF content
@@ -252,13 +247,57 @@ Use the image as the source of truth, and the OCR text as helpful context.""",
             filename: Original filename for context
             instructions: Custom instructions (optional)
 
-        Raises:
-            NotImplementedError: Chat Completions API doesn't support native PDF
+        Returns:
+            Extracted data conforming to the schema, with metadata
         """
-        raise NotImplementedError(
-            "Chat Completions API does not support native PDF input. "
-            "Use OCR to extract text first, then call extract() or extract_hybrid()."
+        if instructions is None:
+            instructions = self.DEFAULT_INSTRUCTIONS
+
+        # Build user message with PDF file
+        user_content: List[Dict[str, Any]] = [
+            {
+                "type": "input_file",
+                "filename": filename,
+                "file_data": f"data:application/pdf;base64,{pdf_base64}",
+            },
+            {
+                "type": "input_text",
+                "text": "Extract the information from this document according to the defined schema.",
+            },
+        ]
+
+        # Refresh token and call Responses API
+        self._refresh_client()
+
+        response = self.client.responses.create(
+            model=self.deployment,
+            instructions=instructions,
+            input=[{"role": "user", "content": user_content}],
+            text={
+                "format": {
+                    "type": "json_schema",
+                    "name": schema_name,
+                    "schema": schema,
+                    "strict": True,
+                }
+            },
+            temperature=0,
         )
+
+        # Parse response
+        result = json.loads(response.output_text)
+
+        result["_metadata"] = {
+            "model": self.deployment,
+            "response_id": response.id,
+            "mode": "pdf_native",
+            "usage": {
+                "input_tokens": response.usage.input_tokens if response.usage else None,
+                "output_tokens": response.usage.output_tokens if response.usage else None,
+            },
+        }
+
+        return result
 
 
 def create_extractor(config) -> StructuredExtractor:
