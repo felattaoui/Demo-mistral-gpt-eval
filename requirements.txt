@@ -10,6 +10,7 @@ openai>=1.52.0
 # Azure AI SDKs
 azure-ai-evaluation>=1.0.0
 azure-ai-inference>=1.0.0b9
+azure-ai-projects>=1.0.0b7
 azure-identity>=1.15.0
 
 # Pydantic for data models and JSON Schema generation

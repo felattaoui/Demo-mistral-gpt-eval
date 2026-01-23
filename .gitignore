@@ -84,3 +84,13 @@ htmlcov/
 .DS_Store
 Thumbs.db
 desktop.ini
+claude.md
+
+# ==============================================
+# Temporary & Example Files
+# ==============================================
+temp.py
+temp/
+example_that_worked/
+nul
+.github/

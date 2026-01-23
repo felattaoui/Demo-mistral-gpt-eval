@@ -149,8 +149,11 @@ MISTRAL_MODEL=mistral-document-ai-2505-2
 AZURE_OPENAI_ENDPOINT=https://xxx.cognitiveservices.azure.com
 AZURE_OPENAI_DEPLOYMENT=gpt-5.1
 
-# Évaluation (optionnel)
+# Azure AI Foundry Cloud Evaluation (optionnel)
+PROJECT_ENDPOINT=https://xxx.services.ai.azure.com/api/projects/project-name
 EVAL_MODEL_DEPLOYMENT=gpt-4o
+MODEL_ENDPOINT=https://xxx.services.ai.azure.com   # Optional: defaults to derived from PROJECT_ENDPOINT
+MODEL_API_KEY=your-key                              # Optional: uses DefaultAzureCredential if not set
 ```
 
 ### Mode PDF Direct
