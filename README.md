@@ -1,15 +1,15 @@
 # Azure Document Extraction Pipeline
 
-Pipeline d'extraction de données structurées à partir de documents (PDF, images) utilisant les services Azure AI.
+Pipeline for extracting structured data from documents (PDFs, images) using Azure AI services.
 
-## Fonctionnalités
+## Features
 
-- **OCR** avec Mistral Document AI
-- **Extraction structurée** avec GPT-5.1 (Chat Completions API + Structured Outputs)
-- **Évaluation cloud** avec Azure AI Foundry Evals API (builtin evaluators)
-- **Confidence scoring** avec anchoring OCR vs Extraction + validation de format
-- **Authentification Entra ID** avec refresh automatique du token
-- **Schémas personnalisables** via Pydantic
+- **OCR** with Mistral Document AI
+- **Structured extraction** with GPT-5.1 (Chat Completions API + Structured Outputs)
+- **Cloud evaluation** with Azure AI Foundry Evals API (builtin evaluators)
+- **Confidence scoring** with OCR vs Extraction anchoring + format validation
+- **Entra ID authentication** with automatic token refresh
+- **Customizable schemas** via Pydantic
 
 ## Structure
 
@@ -17,45 +17,45 @@ Pipeline d'extraction de données structurées à partir de documents (PDF, imag
 Demo-mistral-gpt-eval/
 ├── src/
 │   ├── config.py          # Configuration (.env)
-│   ├── utils.py           # Utilitaires (base64, file info)
-│   ├── ocr.py             # Client Mistral OCR
-│   ├── extractor.py       # Extraction GPT (Chat Completions API)
-│   ├── evaluator.py       # Évaluation cloud (Azure AI Foundry)
-│   ├── confidence.py      # Score de confiance (anchoring + format)
-│   ├── schemas.py         # Schémas Pydantic
-│   ├── field_formats.py   # Spécifications de format par champ
-│   ├── normalizers.py     # Normalisation des valeurs extraites
-│   └── pipeline.py        # Pipeline complet
+│   ├── utils.py           # Utilities (base64, file info)
+│   ├── ocr.py             # Mistral OCR client
+│   ├── extractor.py       # GPT extraction (Chat Completions API)
+│   ├── evaluator.py       # Cloud evaluation (Azure AI Foundry)
+│   ├── confidence.py      # Confidence score (anchoring + format)
+│   ├── schemas.py         # Pydantic schemas
+│   ├── field_formats.py   # Field format specifications
+│   ├── normalizers.py     # Extracted value normalization
+│   └── pipeline.py        # Complete pipeline
 │
-├── azure_document_extraction_pipeline.ipynb  # Notebook principal
-├── output/                # Résultats exportés
+├── azure_document_extraction_pipeline.ipynb  # Main notebook
+├── output/                # Exported results
 │
-├── .env                   # Configuration (non versionné)
-├── requirements.txt       # Dépendances Python
+├── .env                   # Configuration (not versioned)
+├── requirements.txt       # Python dependencies
 └── README.md
 ```
 
-## Démarrage Rapide
+## Quick Start
 
 ### 1. Installation
 
 ```bash
-# Cloner le projet
+# Clone the project
 git clone https://github.com/felattaoui/Demo-mistral-gpt-eval.git
 cd Demo-mistral-gpt-eval
 
-# Créer un environnement virtuel
+# Create a virtual environment
 python -m venv .venv
 source .venv/bin/activate  # Linux/Mac
-# ou .venv\Scripts\activate  # Windows
+# or .venv\Scripts\activate  # Windows
 
-# Installer les dépendances
+# Install dependencies
 pip install -r requirements.txt
 ```
 
 ### 2. Configuration
 
-Créer un fichier `.env` à la racine du projet :
+Create a `.env` file at the project root:
 
 ```env
 # ----------------------------------------------
@@ -72,30 +72,30 @@ AZURE_OPENAI_ENDPOINT=https://your-resource.cognitiveservices.azure.com
 AZURE_OPENAI_DEPLOYMENT=gpt-5.1
 
 # ----------------------------------------------
-# Azure AI Foundry (Évaluation Cloud)
+# Azure AI Foundry (Cloud Evaluation)
 # ----------------------------------------------
 PROJECT_ENDPOINT=https://your-project.services.ai.azure.com/api/projects/project-name
 EVAL_MODEL_DEPLOYMENT=gpt-4.1
 
 # ----------------------------------------------
-# Azure Tenant (pour Entra ID)
+# Azure Tenant (for Entra ID)
 # ----------------------------------------------
 AZURE_TENANT_ID=your-tenant-id
 
 # ----------------------------------------------
-# Mode d'extraction: text_only ou hybrid
+# Extraction mode: text_only or hybrid
 # ----------------------------------------------
 EXTRACTION_MODE=hybrid
 ```
 
-### 3. Authentification Azure
+### 3. Azure Authentication
 
 ```bash
-# Se connecter avec Azure CLI
+# Log in with Azure CLI
 az login --tenant your-tenant-id
 ```
 
-### 4. Utilisation
+### 4. Usage
 
 ```python
 import sys
@@ -104,94 +104,94 @@ sys.path.insert(0, "src")
 from config import Config
 from pipeline import DocumentPipeline
 
-# Charger la config
+# Load configuration
 config = Config.from_env()
 
-# Créer le pipeline
+# Create the pipeline
 pipeline = DocumentPipeline(config)
 
-# Traiter un document
+# Process a document
 results = pipeline.process("invoice.png", run_evaluation=True, verbose=True)
 
-# Afficher les résultats
+# Display results
 pipeline.display_results(results)
 
-# Exporter
+# Export
 pipeline.export_results(results, "output/results.json")
 ```
 
-## Prérequis Azure
+## Azure Prerequisites
 
-### Déploiements nécessaires
+### Required Deployments
 
-| Service | Modèle | Usage |
+| Service | Model | Usage |
 |---------|--------|-------|
-| Azure AI Services | Mistral Document AI | OCR du document |
-| Azure OpenAI | GPT-5.1 | Extraction structurée |
-| Azure AI Foundry | gpt-4.1 | Évaluation cloud (LLM-as-Judge) |
+| Azure AI Services | Mistral Document AI | Document OCR |
+| Azure OpenAI | GPT-5.1 | Structured extraction |
+| Azure AI Foundry | gpt-4.1 | Cloud evaluation (LLM-as-Judge) |
 
-### Authentification
+### Authentication
 
-- **Azure OpenAI** : Entra ID (DefaultAzureCredential)
-- **Mistral OCR** : Clé API (Bearer token)
-- **Évaluation** : Entra ID avec tenant spécifique
+- **Azure OpenAI**: Entra ID (DefaultAzureCredential)
+- **Mistral OCR**: API Key (Bearer token)
+- **Evaluation**: Entra ID with specific tenant
 
-## Modes d'Extraction
+## Extraction Modes
 
-| Mode | Description | Quand l'utiliser |
-|------|-------------|------------------|
-| `text_only` | OCR texte uniquement → GPT | Documents avec texte clair |
-| `hybrid` | OCR texte + image → GPT | Documents avec éléments visuels (cases à cocher, signatures) |
+| Mode | Description | When to Use |
+|------|-------------|-------------|
+| `text_only` | OCR text only → GPT | Documents with clear text |
+| `hybrid` | OCR text + image → GPT | Documents with visual elements (checkboxes, signatures) |
 
-## Métriques d'Évaluation
+## Evaluation Metrics
 
-### Évaluation Cloud (Azure AI Foundry)
+### Cloud Evaluation (Azure AI Foundry)
 
-| Métrique | Description | Échelle |
-|----------|-------------|---------|
-| Groundedness | Données présentes dans le source OCR | 1-5 |
-| Relevance | Pertinence de l'extraction | 1-5 |
-| Coherence | Cohérence du résultat JSON | 1-5 |
+| Metric | Description | Scale |
+|--------|-------------|-------|
+| Groundedness | Data present in OCR source | 1-5 |
+| Relevance | Extraction relevance | 1-5 |
+| Coherence | JSON result coherence | 1-5 |
 
-### Confidence Locale (Anchoring)
+### Local Confidence (Anchoring)
 
-| Métrique | Description | Échelle |
-|----------|-------------|---------|
-| Anchoring | Correspondance OCR vs Extraction | 0-1 |
-| Format Validation | Respect des formats (dates, montants) | pass/fail |
-| HITL Flag | Champs nécessitant review humaine | boolean |
+| Metric | Description | Scale |
+|--------|-------------|-------|
+| Anchoring | OCR vs Extraction match | 0-1 |
+| Format Validation | Format compliance (dates, amounts) | pass/fail |
+| HITL Flag | Fields requiring human review | boolean |
 
-## Schémas Personnalisés
+## Custom Schemas
 
-Créez vos propres schémas d'extraction avec Pydantic :
+Create your own extraction schemas with Pydantic:
 
 ```python
 from pydantic import BaseModel, Field
 from typing import Optional
 
 class ContractExtraction(BaseModel):
-    """Extraction de contrat."""
+    """Contract extraction schema."""
 
-    contract_number: str = Field(description="Numéro de contrat")
-    parties: list[str] = Field(description="Parties au contrat")
-    effective_date: Optional[str] = Field(default=None, description="Date d'effet (YYYY-MM-DD)")
-    termination_date: Optional[str] = Field(default=None, description="Date de fin (YYYY-MM-DD)")
-    total_value: Optional[float] = Field(default=None, description="Valeur totale")
+    contract_number: str = Field(description="Contract number")
+    parties: list[str] = Field(description="Contract parties")
+    effective_date: Optional[str] = Field(default=None, description="Effective date (YYYY-MM-DD)")
+    termination_date: Optional[str] = Field(default=None, description="Termination date (YYYY-MM-DD)")
+    total_value: Optional[float] = Field(default=None, description="Total value")
 
-# Utiliser le schéma
+# Use the schema
 results = pipeline.process_with_schema(
     file_path="contract.pdf",
     schema_model=ContractExtraction
 )
 ```
 
-## Documentation Azure
+## Azure Documentation
 
 - [Azure OpenAI Chat Completions](https://learn.microsoft.com/azure/ai-services/openai/how-to/chatgpt)
 - [Structured Outputs](https://learn.microsoft.com/azure/ai-services/openai/how-to/structured-outputs)
 - [Mistral OCR on Azure](https://learn.microsoft.com/azure/ai-foundry/how-to/use-image-models)
 - [Azure AI Foundry Evals API](https://learn.microsoft.com/azure/ai-foundry/how-to/evaluate-sdk)
 
-## Licence
+## License
 
 MIT

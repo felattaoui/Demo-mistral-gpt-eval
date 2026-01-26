@@ -503,6 +503,6 @@ def create_evaluator(config: Any) -> Optional[QualityEvaluator]:
     )
 
 
-# Aliases pour compatibilite avec le notebook
+# Aliases for notebook compatibility
 CloudEvaluator = QualityEvaluator
 CloudEvaluatorV2 = QualityEvaluator

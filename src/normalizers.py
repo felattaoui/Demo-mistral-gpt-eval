@@ -1,10 +1,10 @@
 """
-Fonctions de normalisation par type de format.
+Normalization functions by format type.
 
-Transforme les valeurs OCR pour correspondre au format extrait.
-Cela permet de comparer des valeurs sémantiquement équivalentes:
-- "15/01/2024" vs "2024-01-15" → même date
-- "1,234.56 €" vs "1234.56" → même montant
+Transforms OCR values to match the extracted format.
+This allows comparing semantically equivalent values:
+- "15/01/2024" vs "2024-01-15" → same date
+- "1,234.56 €" vs "1234.56" → same amount
 """
 
 from __future__ import annotations
@@ -16,39 +16,39 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 def normalize_date(ocr_value: str) -> Optional[str]:
     """
-    Normalise une date OCR vers ISO format (YYYY-MM-DD).
+    Normalize an OCR date to ISO format (YYYY-MM-DD).
 
-    Supporte plusieurs formats d'entrée:
-    - DD/MM/YYYY (européen)
-    - MM/DD/YYYY (américain)
+    Supports multiple input formats:
+    - DD/MM/YYYY (European)
+    - MM/DD/YYYY (American)
     - DD-MM-YYYY
     - YYYY/MM/DD
-    - YYYY-MM-DD (déjà ISO)
+    - YYYY-MM-DD (already ISO)
 
     Args:
-        ocr_value: Texte OCR contenant une date
+        ocr_value: OCR text containing a date
 
     Returns:
-        Date au format ISO (YYYY-MM-DD) ou None si pas de date trouvée
+        Date in ISO format (YYYY-MM-DD) or None if no date found
     """
     if not ocr_value:
         return None
 
     ocr_str = str(ocr_value).strip()
 
-    # Patterns de date courants avec leur format strptime
-    # Note: On essaie d'abord les formats européens (DD/MM/YYYY) car plus courants en France
+    # Common date patterns with their strptime format
+    # Note: European formats (DD/MM/YYYY) are tried first as they are more common in France
     patterns: List[Tuple[str, str]] = [
-        # Formats avec /
-        (r"(\d{2})/(\d{2})/(\d{4})", "%d/%m/%Y"),  # DD/MM/YYYY (européen)
+        # Formats with /
+        (r"(\d{2})/(\d{2})/(\d{4})", "%d/%m/%Y"),  # DD/MM/YYYY (European)
         (r"(\d{4})/(\d{2})/(\d{2})", "%Y/%m/%d"),  # YYYY/MM/DD
 
-        # Formats avec -
+        # Formats with -
         (r"(\d{2})-(\d{2})-(\d{4})", "%d-%m-%Y"),  # DD-MM-YYYY
         (r"(\d{4})-(\d{2})-(\d{2})", "%Y-%m-%d"),  # YYYY-MM-DD (ISO)
 
-        # Formats avec .
-        (r"(\d{2})\.(\d{2})\.(\d{4})", "%d.%m.%Y"),  # DD.MM.YYYY (allemand)
+        # Formats with .
+        (r"(\d{2})\.(\d{2})\.(\d{4})", "%d.%m.%Y"),  # DD.MM.YYYY (German)
     ]
 
     for pattern, date_format in patterns:
@@ -58,32 +58,32 @@ def normalize_date(ocr_value: str) -> Optional[str]:
                 dt = datetime.strptime(match.group(), date_format)
                 return dt.strftime("%Y-%m-%d")
             except ValueError:
-                # Format invalide (ex: 31/02/2024), essayer le pattern suivant
+                # Invalid format (e.g., 31/02/2024), try next pattern
                 continue
 
-    return None  # Pas de format reconnu
+    return None  # No recognized format
 
 
 def normalize_amount(ocr_value: Any) -> Optional[str]:
     """
-    Normalise un montant OCR vers format numérique standardisé.
+    Normalize an OCR amount to standardized numeric format.
 
-    Gère les formats:
+    Handles formats:
     - "1,234.56 €" → "1234.56" (US)
-    - "1.234,56 €" → "1234.56" (européen)
-    - "1 234,56" → "1234.56" (français avec espace)
+    - "1.234,56 €" → "1234.56" (European)
+    - "1 234,56" → "1234.56" (French with space)
     - "$1,234.56" → "1234.56"
 
     Args:
-        ocr_value: Texte OCR ou nombre contenant un montant
+        ocr_value: OCR text or number containing an amount
 
     Returns:
-        Montant formaté avec 2 décimales ou None si invalide
+        Amount formatted with 2 decimals or None if invalid
     """
     if ocr_value is None:
         return None
 
-    # Si c'est déjà un nombre
+    # If already a number
     if isinstance(ocr_value, (int, float)):
         return f"{float(ocr_value):.2f}"
 
@@ -91,41 +91,41 @@ def normalize_amount(ocr_value: Any) -> Optional[str]:
     if not ocr_str:
         return None
 
-    # Retirer symboles monétaires et espaces
+    # Remove currency symbols and spaces
     cleaned = re.sub(r'[$€£¥\s]', '', ocr_str)
 
-    # Retirer les lettres (ex: "EUR", "USD")
+    # Remove letters (e.g., "EUR", "USD")
     cleaned = re.sub(r'[A-Za-z]', '', cleaned)
 
     if not cleaned:
         return None
 
-    # Gérer format européen (1.234,56) vs US (1,234.56)
+    # Handle European format (1.234,56) vs US (1,234.56)
     if ',' in cleaned and '.' in cleaned:
-        # Les deux séparateurs présents
+        # Both separators present
         if cleaned.rfind(',') > cleaned.rfind('.'):
-            # Format européen: le . est séparateur de milliers, la , est décimale
+            # European format: . is thousands separator, , is decimal
             # 1.234,56 → 1234.56
             cleaned = cleaned.replace('.', '').replace(',', '.')
         else:
-            # Format US: la , est séparateur de milliers, le . est décimale
+            # US format: , is thousands separator, . is decimal
             # 1,234.56 → 1234.56
             cleaned = cleaned.replace(',', '')
     elif ',' in cleaned:
-        # Virgule seule
-        # Vérifier si c'est un séparateur de milliers ou décimal
+        # Comma only
+        # Check if it's a thousands separator or decimal
         parts = cleaned.split(',')
         if len(parts) == 2 and len(parts[1]) == 2:
-            # Probablement décimale européenne (ex: 1234,56)
+            # Probably European decimal (e.g., 1234,56)
             cleaned = cleaned.replace(',', '.')
         elif len(parts) == 2 and len(parts[1]) == 3:
-            # Probablement séparateur de milliers (ex: 1,234)
+            # Probably thousands separator (e.g., 1,234)
             cleaned = cleaned.replace(',', '')
         else:
-            # Par défaut, traiter comme décimale
+            # Default, treat as decimal
             cleaned = cleaned.replace(',', '.')
-    # Si seulement des points, c'est soit décimal soit milliers
-    # On garde tel quel car le point est le séparateur standard
+    # If only dots, it's either decimal or thousands
+    # Keep as is since dot is the standard separator
 
     try:
         value = float(cleaned)
@@ -136,29 +136,29 @@ def normalize_amount(ocr_value: Any) -> Optional[str]:
 
 def normalize_phone(ocr_value: str) -> Optional[str]:
     """
-    Normalise un numéro de téléphone (chiffres uniquement).
+    Normalize a phone number (digits only).
 
-    Exemples:
+    Examples:
     - "06 12 34 56 78" → "0612345678"
     - "+33 6 12 34 56 78" → "33612345678"
     - "(01) 234-5678" → "012345678"
 
     Args:
-        ocr_value: Texte OCR contenant un numéro de téléphone
+        ocr_value: OCR text containing a phone number
 
     Returns:
-        Numéro avec uniquement les chiffres ou None si vide
+        Number with only digits or None if empty
     """
     if not ocr_value:
         return None
 
-    # Garder uniquement les chiffres
+    # Keep only digits
     digits = re.sub(r'\D', '', str(ocr_value))
 
     return digits if digits else None
 
 
-# Registry des normalizers par type de format
+# Registry of normalizers by format type
 NORMALIZERS: Dict[str, Callable[[Any], Optional[str]]] = {
     "date": normalize_date,
     "amount": normalize_amount,
@@ -168,14 +168,14 @@ NORMALIZERS: Dict[str, Callable[[Any], Optional[str]]] = {
 
 def normalize_value(value: Any, format_type: str) -> Optional[str]:
     """
-    Normalise une valeur selon son type de format.
+    Normalize a value according to its format type.
 
     Args:
-        value: Valeur à normaliser
-        format_type: Type de format ("date", "amount", "phone")
+        value: Value to normalize
+        format_type: Format type ("date", "amount", "phone")
 
     Returns:
-        Valeur normalisée ou None si le format n'est pas supporté ou la valeur invalide
+        Normalized value or None if format not supported or value invalid
     """
     normalizer = NORMALIZERS.get(format_type)
     if normalizer:
@@ -189,22 +189,22 @@ def find_and_normalize_in_text(
     target_value: str
 ) -> Optional[str]:
     """
-    Cherche une valeur dans le texte OCR et la normalise.
+    Search for a value in OCR text and normalize it.
 
-    Utile quand on veut trouver la valeur OCR correspondant à une extraction.
-    Par exemple, si on a extrait "2024-01-15", on cherche dans l'OCR
-    toutes les dates et on retourne celle qui match après normalisation.
+    Useful when you want to find the OCR value corresponding to an extraction.
+    For example, if "2024-01-15" was extracted, search all dates in OCR
+    and return the one that matches after normalization.
 
     Args:
-        text: Texte OCR complet
-        format_type: Type de format recherché
-        target_value: Valeur extraite à matcher
+        text: Complete OCR text
+        format_type: Format type to search for
+        target_value: Extracted value to match
 
     Returns:
-        Valeur OCR normalisée qui correspond ou None
+        Normalized OCR value that matches or None
     """
     if format_type == "date":
-        # Chercher toutes les dates potentielles dans le texte
+        # Search for all potential dates in text
         date_patterns = [
             r"\d{2}/\d{2}/\d{4}",
             r"\d{4}/\d{2}/\d{2}",
@@ -219,7 +219,7 @@ def find_and_normalize_in_text(
                     return normalized
 
     elif format_type == "amount":
-        # Chercher toutes les valeurs numériques potentielles
+        # Search for all potential numeric values
         amount_patterns = [
             r"[\d\s,.]+(?:\s*[€$£¥])?",
             r"[€$£¥]\s*[\d\s,.]+",
